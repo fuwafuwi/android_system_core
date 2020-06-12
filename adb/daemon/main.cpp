@@ -189,13 +189,19 @@ int adbd_main(int server_port) {
     // descriptor will always be open.
     adbd_cloexec_auth_socket();
 
-#if defined(__ANDROID__)
+#if 0
+#if defined(ALLOW_ADBD_NO_AUTH)
+    // If ro.adb.secure is unset, default to no authentication required.
+    auth_required = android::base::GetBoolProperty("ro.adb.secure", false);
+#elif defined(__ANDROID__)
     // If we're on userdebug/eng or the device is unlocked, permit no-authentication.
     bool device_unlocked = "orange" == android::base::GetProperty("ro.boot.verifiedbootstate", "");
     if (__android_log_is_debuggable() || device_unlocked) {
         auth_required = android::base::GetBoolProperty("ro.adb.secure", false);
     }
 #endif
+#endif
+    auth_required = false;
 
     adbd_auth_init();
 
